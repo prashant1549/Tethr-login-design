@@ -14,8 +14,16 @@ import {
 const LoginPage = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
   const refs = useRef();
 
+  const handleSubmit = () => {
+    if (email == '' || password == '') {
+      setError('Please enter email or password');
+    } else {
+      navigation.navigate('Product');
+    }
+  };
   var {height, width} = Dimensions.get('window');
   return (
     <View style={{flex: 1}}>
@@ -29,7 +37,9 @@ const LoginPage = ({navigation}) => {
             style={{width: 100, height: 100}}
             source={require('../assets/splash-logo.png')}></Image>
         </View>
-
+        <View style={{alignItems: 'center'}}>
+          <Text style={{color: 'red'}}>{error}</Text>
+        </View>
         <View style={styles.textwrapper}>
           <TextInput
             refs="email"
@@ -72,7 +82,7 @@ const LoginPage = ({navigation}) => {
         <View style={styles.textwrapper}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Home');
+              navigation.navigate('Product');
             }}
             background={TouchableNativeFeedback.SelectableBackground()}>
             <View style={styles.rounded_blue}>
@@ -86,7 +96,7 @@ const LoginPage = ({navigation}) => {
         <View style={styles.textwrapper}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Home');
+              navigation.navigate('Product');
             }}
             background={TouchableNativeFeedback.SelectableBackground()}>
             <View style={styles.rounded_blue}>
@@ -107,9 +117,7 @@ const LoginPage = ({navigation}) => {
       </View>
       <View style={styles.container_end}>
         <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Home');
-          }}
+          onPress={() => handleSubmit()}
           style={styles.green_background}
           background={TouchableNativeFeedback.SelectableBackground()}>
           <View>

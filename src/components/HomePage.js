@@ -18,19 +18,7 @@ const HomePage = ({navigation}) => {
       style={{width: width, height: height}}
       source={require('../assets/bg1.jpg')}>
       <View style={[styles.overlay, {height: height, width: width}]} />
-      <View style={styles.signup_button}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Signup');
-          }}
-          background={TouchableNativeFeedback.SelectableBackground()}>
-          <View style={{}}>
-            <View style={(styles.align_text, {width: width * 0.3})}>
-              <Text style={styles.green_button_text}>Sing Up...</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-      </View>
+
       <View style={styles.container}>
         <View
           style={
@@ -60,12 +48,12 @@ const HomePage = ({navigation}) => {
 
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('TakeTour');
+              navigation.navigate('Signup');
             }}
             background={TouchableNativeFeedback.SelectableBackground()}>
             <View style={styles.transparent_button}>
               <View style={(styles.align_text, {width: width * 0.5})}>
-                <Text style={styles.green_button_text}>TAKE THE TOUR</Text>
+                <Text style={styles.green_button_text}>SIGN UP</Text>
               </View>
             </View>
           </TouchableOpacity>

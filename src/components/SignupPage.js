@@ -10,12 +10,25 @@ import {
   TextInput,
   ToastAndroid,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const SignupPage = ({navigation}) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
   const refs = useRef();
+
+  const handleSubmit = async () => {
+    if (email == '' || password == '' || name == '') {
+      setError('Please enter email or password or name');
+    } else {
+      try {
+        await AsyncStorage.setItem('email', email);
+        navigation.navigate('Product');
+      } catch (error) {}
+    }
+  };
 
   var {height, width} = Dimensions.get('window');
   return (
@@ -29,6 +42,9 @@ const SignupPage = ({navigation}) => {
           <Image
             style={{width: 100, height: 100}}
             source={require('../assets/splash-logo.png')}></Image>
+        </View>
+        <View style={{alignItems: 'center'}}>
+          <Text style={{color: 'red'}}>{error}</Text>
         </View>
         <View style={styles.textwrapper}>
           <TextInput
@@ -90,27 +106,62 @@ const SignupPage = ({navigation}) => {
         <View style={styles.textwrapper}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Home');
+              navigation.navigate('Product');
+            }}
+            style={{
+              borderWidth: 1,
+              width: 230,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 10,
+              backgroundColor: '#4b77da',
             }}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View style={styles.rounded_blue}>
-              <View style={[styles.align_text, {width: width * 0.75}]}>
+            <Image
+              style={{width: 50, height: 50, borderRadius: 10, marginLeft: -13}}
+              source={require('../assets/facebook.png')}
+            />
+            <Text style={{color: '#fff', marginLeft: 10, fontWeight: 'bold'}}>
+              Sign Up With Facebook
+            </Text>
+            {/* <View style={styles.rounded_blue}>
+              <View
+                style={[
+                  styles.align_text,
+                  {width: width * 0.75, flexDirection: 'row'},
+                ]}>
+                <Image
+                  style={{width: 50, height: 20}}
+                  source={require('../assets/gg.png')}
+                />
                 <Text style={styles.facebook_text}>SIGN UP VIA FACEBOOK</Text>
               </View>
-            </View>
+            </View> */}
           </TouchableOpacity>
         </View>
         <View style={styles.textwrapper}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Home');
+              navigation.navigate('Product');
+            }}
+            style={{
+              borderWidth: 1,
+              width: 230,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 10,
+              backgroundColor: '#dd4b39',
             }}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View style={styles.rounded_blue}>
-              <View style={[styles.align_text_red, {width: width * 0.75}]}>
-                <Text style={styles.google_text}>SIGN UP VIA GOOGLE</Text>
-              </View>
-            </View>
+            <Image
+              style={{width: 50, height: 50, borderRadius: 10, marginLeft: -25}}
+              source={require('../assets/gg.png')}
+            />
+            <Text style={{color: '#fff', marginLeft: 12, fontWeight: 'bold'}}>
+              Sign Up With Google
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={{alignSelf: 'center', marginVertical: 10}}>
@@ -124,9 +175,7 @@ const SignupPage = ({navigation}) => {
       </View>
       <View style={styles.container_end}>
         <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Home');
-          }}
+          onPress={() => handleSubmit()}
           style={styles.green_background}
           background={TouchableNativeFeedback.SelectableBackground()}>
           <View>
@@ -166,33 +215,34 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
     justifyContent: 'center',
-    margin: 5,
     // backgroundColor: '#fff',
   },
   align_text: {
     padding: 25,
     alignSelf: 'center',
     borderWidth: 1,
+
     borderColor: '#4b77da',
-    borderRadius: 30,
-    color: '#4b77da',
+    borderRadius: 10,
+    color: '#FFFFFF',
   },
   align_text_red: {
     padding: 20,
     alignSelf: 'center',
     borderWidth: 1,
     borderColor: '#dd4b39',
-    borderRadius: 30,
+    borderRadius: 10,
   },
   facebook_text: {
     fontSize: 15,
     textAlign: 'center',
-    color: '#4b77da',
+    color: '#FFFFFF',
+    backgroundColor: '#4b77da',
   },
   google_text: {
     fontSize: 15,
     textAlign: 'center',
-    color: '#dd4b39',
+    color: '#FFFFFF',
   },
   container_end: {
     flex: 0.1,
