@@ -9,19 +9,28 @@ import {
   TouchableOpacity,
   TextInput,
   ToastAndroid,
+  Alert,
 } from 'react-native';
+import {useDispatch} from 'react-redux';
+import {addEmail} from './Services/Action/Todo';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const LoginPage = ({navigation}) => {
+  const dispatch = useDispatch();
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const refs = useRef();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (email == '' || password == '') {
       setError('Please enter email or password');
     } else {
-      navigation.navigate('Product');
+      dispatch(addEmail(email));
+      try {
+        await AsyncStorage.setItem('email', email);
+        navigation.navigate('DrawerSideMenu');
+      } catch (error) {}
     }
   };
   var {height, width} = Dimensions.get('window');
@@ -82,28 +91,51 @@ const LoginPage = ({navigation}) => {
         <View style={styles.textwrapper}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Product');
+              alert('work in progress');
+              // navigation.navigate('DrawerSideMenu');
+            }}
+            style={{
+              borderWidth: 1,
+              width: 230,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 10,
+              backgroundColor: '#4b77da',
             }}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View style={styles.rounded_blue}>
-              <View style={[styles.align_text, {width: width * 0.75}]}>
-                <Text style={styles.facebook_text}>SIGN IN VIA FACEBOOK</Text>
-              </View>
-            </View>
+            <Image
+              style={{width: 50, height: 50, borderRadius: 10, marginLeft: -13}}
+              source={require('../assets/facebook.png')}
+            />
+            <Text style={{color: '#fff', marginLeft: 10, fontWeight: 'bold'}}>
+              Sign In With Facebook
+            </Text>
           </TouchableOpacity>
         </View>
-
         <View style={styles.textwrapper}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Product');
+              alert('work in progress');
+              // navigation.navigate('DrawerSideMenu');
+            }}
+            style={{
+              borderWidth: 1,
+              width: 230,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: 10,
+              backgroundColor: '#dd4b39',
             }}
             background={TouchableNativeFeedback.SelectableBackground()}>
-            <View style={styles.rounded_blue}>
-              <View style={[styles.align_text_red, {width: width * 0.75}]}>
-                <Text style={styles.google_text}>SIGN IN VIA GOOGLE</Text>
-              </View>
-            </View>
+            <Image
+              style={{width: 50, height: 50, borderRadius: 10, marginLeft: -25}}
+              source={require('../assets/gg.png')}
+            />
+            <Text style={{color: '#fff', marginLeft: 12, fontWeight: 'bold'}}>
+              Sign In With Google
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={{alignSelf: 'center', marginVertical: 10}}>

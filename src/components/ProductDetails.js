@@ -9,10 +9,14 @@ import {
   ScrollView,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
+import {useDispatch} from 'react-redux';
+import {addCart} from './Services/Action/Todo';
+import AsyncStorage from '@react-native-community/async-storage';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 
 const ProductDetails = ({navigation}) => {
   const carouselRef = useRef(null);
+  const dispatch = useDispatch();
   const [index, setIndex] = React.useState(0);
   const [select_size, setSelectSize] = useState('');
   const [view, setView] = useState(true);
@@ -35,7 +39,15 @@ const ProductDetails = ({navigation}) => {
       </View>
     );
   };
-
+  const handleCart = async () => {
+    const data = JSON.parse((await AsyncStorage.getItem('CartItem')) || '[]');
+    data.push(Math.floor(Math.random() * 1000 + 1));
+    dispatch(addCart(Math.floor(Math.random() * 1000 + 1)));
+    try {
+      await AsyncStorage.setItem('CartItem', JSON.stringify(data));
+      navigation.navigate('Cart Item');
+    } catch (error) {}
+  };
   var {height, width} = Dimensions.get('window');
   return (
     <View style={{flex: 1}}>
@@ -69,19 +81,7 @@ const ProductDetails = ({navigation}) => {
               carouselRef={carouselRef}
             />
           </View>
-          <View style={styles.size_color}>
-            <View style={styles.picker}>
-              <Picker
-                selectedValue={select_size}
-                onValueChange={(itemValue, itemIndex) =>
-                  setSelectSize(itemValue)
-                }>
-                <Picker.Item label="Small" value="Small" />
-                <Picker.Item label="Medium" value="Medium" />
-                <Picker.Item label="Large" value="Large" />
-              </Picker>
-            </View>
-          </View>
+
           <View style={{height: 30, backgroundColor: 'white'}}></View>
           <View>
             <View style={styles.tab_heading_wrapper}>
@@ -146,14 +146,17 @@ const ProductDetails = ({navigation}) => {
                 <Text style={styles.tab_content_text}>
                   5. Dual SIM (LTE+LTE) and Fingerprint Sensor
                 </Text>
+                <Text style={styles.tab_content_text}>
+                  6. Dual SIM (LTE+LTE) and Fingerprint Sensor
+                </Text>
+                <Text style={styles.tab_content_text}>
+                  7. Dual SIM (LTE+LTE) and Fingerprint Sensor
+                </Text>
               </View>
             )}
           </View>
-          <View>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Product');
-              }}>
+          <View style={{justifyContent: 'flex-end'}}>
+            <TouchableOpacity onPress={() => handleCart()}>
               <View style={styles.full_cart}>
                 <Text style={{color: 'white', fontSize: 20}}>ADD TO CART</Text>
               </View>
@@ -228,6 +231,7 @@ const styles = StyleSheet.create({
   },
   tab_content_wrapper: {
     paddingLeft: 10,
+    marginVertical: 30,
   },
   tab_content_text: {
     fontSize: 15,

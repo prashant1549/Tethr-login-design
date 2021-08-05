@@ -10,9 +10,12 @@ import {
   TextInput,
   ToastAndroid,
 } from 'react-native';
+import {useDispatch} from 'react-redux';
+import {addEmail} from './Services/Action/Todo';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const SignupPage = ({navigation}) => {
+  const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -23,9 +26,10 @@ const SignupPage = ({navigation}) => {
     if (email == '' || password == '' || name == '') {
       setError('Please enter email or password or name');
     } else {
+      dispatch(addEmail(email));
       try {
         await AsyncStorage.setItem('email', email);
-        navigation.navigate('Product');
+        navigation.navigate('DrawerSideMenu');
       } catch (error) {}
     }
   };
@@ -106,7 +110,8 @@ const SignupPage = ({navigation}) => {
         <View style={styles.textwrapper}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Product');
+              alert('work in progress');
+              // navigation.navigate('DrawerSideMenu');
             }}
             style={{
               borderWidth: 1,
@@ -125,25 +130,13 @@ const SignupPage = ({navigation}) => {
             <Text style={{color: '#fff', marginLeft: 10, fontWeight: 'bold'}}>
               Sign Up With Facebook
             </Text>
-            {/* <View style={styles.rounded_blue}>
-              <View
-                style={[
-                  styles.align_text,
-                  {width: width * 0.75, flexDirection: 'row'},
-                ]}>
-                <Image
-                  style={{width: 50, height: 20}}
-                  source={require('../assets/gg.png')}
-                />
-                <Text style={styles.facebook_text}>SIGN UP VIA FACEBOOK</Text>
-              </View>
-            </View> */}
           </TouchableOpacity>
         </View>
         <View style={styles.textwrapper}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('Product');
+              alert('work in progress');
+              // navigation.navigate('DrawerSideMenu');
             }}
             style={{
               borderWidth: 1,
