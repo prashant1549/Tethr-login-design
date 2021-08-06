@@ -1,8 +1,19 @@
-import {DELETE_CART, ADD_CART, ADD_EMAIL, ASYN_DATA} from '../Action/Type';
+import {
+  DELETE_CART,
+  ADD_CART,
+  ADD_EMAIL,
+  ASYN_DATA,
+  ORDER_DETAILS,
+  ITEM_QUNATITY,
+  CHECK_ITEM,
+  ORDER_PLACE,
+} from '../Action/Type';
 
 const initialState = {
   cart: [],
   email: null,
+  orderDetails: [],
+  itemPlace: [],
 };
 
 const TodoReducer = (state = initialState, action) => {
@@ -27,6 +38,26 @@ const TodoReducer = (state = initialState, action) => {
       return {
         ...state,
         cart: action.data,
+      };
+    case ORDER_DETAILS:
+      return {
+        ...state,
+        orderDetails: state.orderDetails.concat(action.data),
+      };
+    case ITEM_QUNATITY:
+      return {
+        ...state,
+        cart: action.data,
+      };
+    case CHECK_ITEM:
+      state.cart = action.data;
+      return {
+        ...state,
+      };
+    case ORDER_PLACE:
+      return {
+        ...state,
+        orderDetails: action.data,
       };
     default:
       return state;

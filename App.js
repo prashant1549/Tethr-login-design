@@ -12,6 +12,8 @@ import Logout from './src/components/Logout';
 import {useDispatch, useSelector} from 'react-redux';
 import {addEmail} from './src/components/Services/Action/Todo';
 import OrderPlace from './src/components/OrderPlace';
+import SuccessfullPlace from './src/components/SuccessFullOrder';
+import YourOrder from './src/components/YourOrder';
 
 const Stack = createNativeStackNavigator();
 const App = () => {
@@ -19,11 +21,9 @@ const App = () => {
   const dispatch = useDispatch();
   useEffect(async () => {
     const data = await AsyncStorage.getItem('email');
-    console.log(data, 'nskamakm');
     dispatch(addEmail(data));
   }, []);
   const email = useSelector(state => state.TodoReducer.email);
-  console.log(email, 'sdjnsjkdnskdjn');
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -49,6 +49,12 @@ const App = () => {
             <Stack.Screen name="Cart Item" component={CartItem} />
             <Stack.Screen name="Place Order" component={OrderPlace} />
             <Stack.Screen name="Logout" component={Logout} />
+            <Stack.Screen name="Your Order" component={YourOrder} />
+            <Stack.Screen
+              options={{headerShown: false}}
+              name="successfull"
+              component={SuccessfullPlace}
+            />
           </React.Fragment>
         )}
       </Stack.Navigator>
