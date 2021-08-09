@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,9 +11,16 @@ import {
   ToastAndroid,
   Alert,
 } from 'react-native';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from 'react-native-google-signin';
 import {useDispatch} from 'react-redux';
 import {addEmail} from './Services/Action/Todo';
+import {LoginButton, AccessToken} from 'react-native-fbsdk';
 import AsyncStorage from '@react-native-community/async-storage';
+// import FacebookLogin from './FacebookLogin';
 
 const LoginPage = ({navigation}) => {
   const dispatch = useDispatch();
@@ -21,7 +28,31 @@ const LoginPage = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const refs = useRef();
-
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '32779565781-bb5t58nsodvqkhktjg2tsilh059q8gc4.apps.googleusercontent.com',
+    });
+  }, []);
+  const signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      alert(JSON.stringify(userInfo));
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log(error.code, 'a');
+        // user cancelled the login flow
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log(error.code, 'b');
+        // operation (e.g. sign in) is in progress already
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log(error.code, 'c'); // play services not available or outdated
+      } else {
+        console.log(error, 'd'); // some other error happened
+      }
+    }
+  };
   const handleSubmit = async () => {
     if (email == '' || password == '') {
       setError('Please enter email or password');
@@ -89,9 +120,24 @@ const LoginPage = ({navigation}) => {
             value={password}></TextInput>
         </View>
         <View style={styles.textwrapper}>
-          <TouchableOpacity
+          <LoginButton
+            onLoginFinished={(error, result) => {
+              if (error) {
+                console.log('login has error: ' + result.error);
+              } else if (result.isCancelled) {
+                console.log('login is cancelled.');
+              } else {
+                AccessToken.getCurrentAccessToken().then(data => {
+                  console.log(data.accessToken.toString());
+                });
+              }
+            }}
+            onLogoutFinished={() => console.log('logout.')}
+          />
+          {/* <TouchableOpacity
             onPress={() => {
-              alert('work in progress');
+              // import FacebookLogin from './FacebookLogin';
+              FacebookLogin;
               // navigation.navigate('DrawerSideMenu');
             }}
             style={{
@@ -111,10 +157,18 @@ const LoginPage = ({navigation}) => {
             <Text style={{color: '#fff', marginLeft: 10, fontWeight: 'bold'}}>
               Sign In With Facebook
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={styles.textwrapper}>
-          <TouchableOpacity
+          <GoogleSigninButton
+            style={{width: 192, height: 48}}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Dark}
+            onPress={signIn}
+            // disabled={this.state.isSigninInProgress}
+          />
+
+          {/* <TouchableOpacity
             onPress={() => {
               alert('work in progress');
               // navigation.navigate('DrawerSideMenu');
@@ -136,7 +190,7 @@ const LoginPage = ({navigation}) => {
             <Text style={{color: '#fff', marginLeft: 12, fontWeight: 'bold'}}>
               Sign In With Google
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={{alignSelf: 'center', marginVertical: 10}}>
           <TouchableOpacity

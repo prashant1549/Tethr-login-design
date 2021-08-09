@@ -88,7 +88,6 @@ const OrderPlace = ({navigation}) => {
       const sts = makeCart();
       dispatch(addOrderDetails(sts));
       localValue.push(...sts);
-      console.log(localValue);
       const filterCart = carData.filter(n1 => n1.isSelected !== true);
       dispatch(checkITEM(filterCart));
       setAddress('');
