@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
 import {useDispatch} from 'react-redux';
 import {addCart} from './Services/Action/Todo';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -18,7 +17,6 @@ const ProductDetails = ({navigation}) => {
   const carouselRef = useRef(null);
   const dispatch = useDispatch();
   const [index, setIndex] = React.useState(0);
-  const [select_size, setSelectSize] = useState('');
   const [view, setView] = useState(true);
   const Data = [
     {id: 1, image: require('../assets/product1.png')},
@@ -41,8 +39,17 @@ const ProductDetails = ({navigation}) => {
   };
   const handleCart = async () => {
     const data = JSON.parse((await AsyncStorage.getItem('CartItem')) || '[]');
-    data.push(Math.floor(Math.random() * 1000 + 1));
-    dispatch(addCart(Math.floor(Math.random() * 1000 + 1)));
+    const cartItem = {
+      id: Math.floor(Math.random() * 1000 + 1),
+      image:
+        'https://rukminim1.flixcart.com/image/800/960/k65d18w0/t-shirt/9/u/5/m-ar5005-010-nike-original-imafzhfkzshakbhg.jpeg?q=50',
+      quantity: 1,
+      title: 'Nike Valueable T-shirt',
+      price: 300,
+      isSelected: false,
+    };
+    data.push(cartItem);
+    dispatch(addCart(cartItem));
     try {
       await AsyncStorage.setItem('CartItem', JSON.stringify(data));
       navigation.navigate('Cart Item');

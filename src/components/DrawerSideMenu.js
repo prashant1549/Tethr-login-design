@@ -10,15 +10,20 @@ import LandingPage from './LandingPage';
 import {useSelector, useDispatch} from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-community/async-storage';
-import {asyncData} from './Services/Action/Todo';
+import {orderPlace, asyncData} from './Services/Action/Todo';
 const DrawerSideMenu = ({navigation}) => {
   const dispatch = useDispatch();
   const drawer = useRef(null);
   useEffect(async () => {
     const data = JSON.parse((await AsyncStorage.getItem('CartItem')) || '[]');
+    const orderDetails = JSON.parse(
+      (await AsyncStorage.getItem('OrderDetails')) || '[]',
+    );
     dispatch(asyncData(data));
+    dispatch(orderPlace(orderDetails));
   }, []);
   const Data = useSelector(state => state.TodoReducer.cart);
+
   const navigationView = () => (
     <View style={[styles.container, styles.navigationContainer]}>
       <View style={{flex: 0.9}}>
@@ -43,6 +48,46 @@ const DrawerSideMenu = ({navigation}) => {
                 marginHorizontal: 10,
               }}>
               Profile
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              marginHorizontal: 20,
+              marginVertical: 10,
+            }}
+            onPress={() => {
+              navigation.navigate('Your Order');
+            }}>
+            <Icon name="shopping-bag" size={30} color="gray" />
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 20,
+                color: 'gray',
+                marginHorizontal: 10,
+              }}>
+              Your order
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              marginHorizontal: 20,
+              marginVertical: 10,
+            }}
+            onPress={() => {
+              navigation.navigate('Cart Item');
+            }}>
+            <Icon name="shopping-cart" size={30} color="gray" />
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 20,
+                color: 'gray',
+                marginHorizontal: 10,
+              }}>
+              Your Cart
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
