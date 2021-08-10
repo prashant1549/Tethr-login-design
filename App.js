@@ -14,12 +14,14 @@ import {addEmail} from './src/components/Services/Action/Todo';
 import OrderPlace from './src/components/OrderPlace';
 import SuccessfullPlace from './src/components/SuccessFullOrder';
 import YourOrder from './src/components/YourOrder';
+import SplashScreen from 'react-native-splash-screen';
 
 const Stack = createNativeStackNavigator();
 const App = () => {
   const drawer = useRef(null);
   const dispatch = useDispatch();
   useEffect(async () => {
+    SplashScreen.hide();
     const data = await AsyncStorage.getItem('email');
     dispatch(addEmail(data));
   }, []);

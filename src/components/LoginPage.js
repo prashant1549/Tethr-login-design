@@ -18,9 +18,9 @@ import {
 } from 'react-native-google-signin';
 import {useDispatch} from 'react-redux';
 import {addEmail} from './Services/Action/Todo';
-import {LoginButton, AccessToken} from 'react-native-fbsdk';
+import auth from '@react-native-firebase/auth';
+import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import AsyncStorage from '@react-native-community/async-storage';
-// import FacebookLogin from './FacebookLogin';
 
 const LoginPage = ({navigation}) => {
   const dispatch = useDispatch();
@@ -34,22 +34,46 @@ const LoginPage = ({navigation}) => {
         '32779565781-bb5t58nsodvqkhktjg2tsilh059q8gc4.apps.googleusercontent.com',
     });
   }, []);
+
+  const onFacebookButtonPress = async () => {
+    const result = await LoginManager.logInWithPermissions([
+      'public_profile',
+      'email',
+    ]);
+    if (result.isCancelled) {
+      throw 'User cancelled the login process';
+    }
+
+    const data = await AccessToken.getCurrentAccessToken();
+    if (!data) {
+      throw 'Something went wrong obtaining access token';
+    } else {
+      dispatch(addEmail(data));
+      try {
+        await AsyncStorage.setItem('email', JSON.stringify(data));
+        navigation.navigate('DrawerSideMenu');
+      } catch (error) {}
+    }
+
+    const facebookCredential = auth.FacebookAuthProvider.credential(
+      data.accessToken,
+    );
+    return auth().signInWithCredential(facebookCredential);
+  };
   const signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      alert(JSON.stringify(userInfo));
+      dispatch(addEmail(JSON.stringify(userInfo)));
+      try {
+        await AsyncStorage.setItem('email', JSON.stringify(userInfo));
+        navigation.navigate('DrawerSideMenu');
+      } catch (error) {}
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log(error.code, 'a');
-        // user cancelled the login flow
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log(error.code, 'b');
-        // operation (e.g. sign in) is in progress already
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log(error.code, 'c'); // play services not available or outdated
       } else {
-        console.log(error, 'd'); // some other error happened
       }
     }
   };
@@ -120,26 +144,8 @@ const LoginPage = ({navigation}) => {
             value={password}></TextInput>
         </View>
         <View style={styles.textwrapper}>
-          <LoginButton
-            onLoginFinished={(error, result) => {
-              if (error) {
-                console.log('login has error: ' + result.error);
-              } else if (result.isCancelled) {
-                console.log('login is cancelled.');
-              } else {
-                AccessToken.getCurrentAccessToken().then(data => {
-                  console.log(data.accessToken.toString());
-                });
-              }
-            }}
-            onLogoutFinished={() => console.log('logout.')}
-          />
-          {/* <TouchableOpacity
-            onPress={() => {
-              // import FacebookLogin from './FacebookLogin';
-              FacebookLogin;
-              // navigation.navigate('DrawerSideMenu');
-            }}
+          <TouchableOpacity
+            onPress={() => onFacebookButtonPress()}
             style={{
               borderWidth: 1,
               width: 230,
@@ -157,40 +163,15 @@ const LoginPage = ({navigation}) => {
             <Text style={{color: '#fff', marginLeft: 10, fontWeight: 'bold'}}>
               Sign In With Facebook
             </Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
         <View style={styles.textwrapper}>
           <GoogleSigninButton
-            style={{width: 192, height: 48}}
+            style={{width: 240, height: 56}}
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Dark}
             onPress={signIn}
-            // disabled={this.state.isSigninInProgress}
           />
-
-          {/* <TouchableOpacity
-            onPress={() => {
-              alert('work in progress');
-              // navigation.navigate('DrawerSideMenu');
-            }}
-            style={{
-              borderWidth: 1,
-              width: 230,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 10,
-              backgroundColor: '#dd4b39',
-            }}
-            background={TouchableNativeFeedback.SelectableBackground()}>
-            <Image
-              style={{width: 50, height: 50, borderRadius: 10, marginLeft: -25}}
-              source={require('../assets/gg.png')}
-            />
-            <Text style={{color: '#fff', marginLeft: 12, fontWeight: 'bold'}}>
-              Sign In With Google
-            </Text>
-          </TouchableOpacity> */}
         </View>
         <View style={{alignSelf: 'center', marginVertical: 10}}>
           <TouchableOpacity
