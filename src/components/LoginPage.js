@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,8 +11,15 @@ import {
   ToastAndroid,
   Alert,
 } from 'react-native';
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from 'react-native-google-signin';
 import {useDispatch} from 'react-redux';
 import {addEmail} from './Services/Action/Todo';
+import auth from '@react-native-firebase/auth';
+import {LoginManager, AccessToken} from 'react-native-fbsdk';
 import AsyncStorage from '@react-native-community/async-storage';
 
 const LoginPage = ({navigation}) => {
@@ -21,7 +28,55 @@ const LoginPage = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const refs = useRef();
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '32779565781-bb5t58nsodvqkhktjg2tsilh059q8gc4.apps.googleusercontent.com',
+    });
+  }, []);
 
+  const onFacebookButtonPress = async () => {
+    const result = await LoginManager.logInWithPermissions([
+      'public_profile',
+      'email',
+    ]);
+    if (result.isCancelled) {
+      throw 'User cancelled the login process';
+    }
+
+    const data = await AccessToken.getCurrentAccessToken();
+    if (!data) {
+      throw 'Something went wrong obtaining access token';
+    } else {
+      dispatch(addEmail(data));
+      try {
+        await AsyncStorage.setItem('email', JSON.stringify(data));
+        navigation.navigate('DrawerSideMenu');
+      } catch (error) {}
+    }
+
+    const facebookCredential = auth.FacebookAuthProvider.credential(
+      data.accessToken,
+    );
+    return auth().signInWithCredential(facebookCredential);
+  };
+  const signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      dispatch(addEmail(JSON.stringify(userInfo)));
+      try {
+        await AsyncStorage.setItem('email', JSON.stringify(userInfo));
+        navigation.navigate('DrawerSideMenu');
+      } catch (error) {}
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+      } else {
+      }
+    }
+  };
   const handleSubmit = async () => {
     if (email == '' || password == '') {
       setError('Please enter email or password');
@@ -90,10 +145,7 @@ const LoginPage = ({navigation}) => {
         </View>
         <View style={styles.textwrapper}>
           <TouchableOpacity
-            onPress={() => {
-              alert('work in progress');
-              // navigation.navigate('DrawerSideMenu');
-            }}
+            onPress={() => onFacebookButtonPress()}
             style={{
               borderWidth: 1,
               width: 230,
@@ -114,29 +166,12 @@ const LoginPage = ({navigation}) => {
           </TouchableOpacity>
         </View>
         <View style={styles.textwrapper}>
-          <TouchableOpacity
-            onPress={() => {
-              alert('work in progress');
-              // navigation.navigate('DrawerSideMenu');
-            }}
-            style={{
-              borderWidth: 1,
-              width: 230,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 10,
-              backgroundColor: '#dd4b39',
-            }}
-            background={TouchableNativeFeedback.SelectableBackground()}>
-            <Image
-              style={{width: 50, height: 50, borderRadius: 10, marginLeft: -25}}
-              source={require('../assets/gg.png')}
-            />
-            <Text style={{color: '#fff', marginLeft: 12, fontWeight: 'bold'}}>
-              Sign In With Google
-            </Text>
-          </TouchableOpacity>
+          <GoogleSigninButton
+            style={{width: 240, height: 56}}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Dark}
+            onPress={signIn}
+          />
         </View>
         <View style={{alignSelf: 'center', marginVertical: 10}}>
           <TouchableOpacity

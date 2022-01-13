@@ -12,6 +12,11 @@ target 'NewAppDesign' do
     :hermes_enabled => false
   )
 
+
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
+  pod 'RNFBCrashlytics', :path => '../node_modules/@react-native-firebase/crashlytics'
+
   target 'NewAppDesignTests' do
     inherit! :complete
     # Pods for testing
